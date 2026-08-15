@@ -1,16 +1,9 @@
 """
-Freight Rate Prediction - Spotter ML Assessment (v4 - Final)
+Freight Rate Prediction - Spotter ML Assessment
 =============================================================
-Lessons learned from iterations:
-  - v1 (29 features, single model): R2=0.830, MAE=$143  <-- BEST so far
-  - v2 (55 features, log-target): R2=0.825 -- log hurt
-  - v3 (51 features, 3 models): R2=0.823 -- too many noisy features + Huber fail
-
-Strategy for v4:
-  - Start from v1's clean feature set (which worked best)
-  - Add only a few proven valuable features selectively
-  - 2-model ensemble (no Huber, both regression/MAE)
-  - Stronger regularization to prevent overfitting with extra features
+Implementation of an ensemble LightGBM model for predicting freight rates.
+Includes Bayesian target encoding, geographic feature engineering (Haversine/circuity),
+and a time-based holdout validation strategy.
 
 Usage:
     python train.py
