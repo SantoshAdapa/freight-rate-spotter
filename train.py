@@ -117,7 +117,7 @@ def engineer_features(df: pd.DataFrame, fill_defaults: bool = False) -> pd.DataF
     df["is_month_end"] = (df["day_of_month"] >= 28).astype(int)
     df["day_of_year"] = df["date"].dt.dayofyear
 
-    # ===== GEOGRAPHIC FEATURES (from v1 + haversine, circuity) =====
+    # ===== GEOGRAPHIC FEATURES (haversine, circuity) =====
     df["lat_diff"] = df["delivery_lat"] - df["pickup_lat"]
     df["lon_diff"] = df["delivery_lon"] - df["pickup_lon"]
     df["geo_distance_approx"] = np.sqrt(df["lat_diff"]**2 + df["lon_diff"]**2)
@@ -173,7 +173,7 @@ def engineer_features(df: pd.DataFrame, fill_defaults: bool = False) -> pd.DataF
     return df
 
 
-# Curated feature list: v1 core + selective additions
+# Selected features based on exploratory analysis
 FEATURE_COLS = [
     # raw numeric (8)
     "distance", "weight", "pickup_lat", "pickup_lon",
@@ -181,7 +181,7 @@ FEATURE_COLS = [
     # date (8)
     "day_of_week", "day_of_month", "month", "week_of_year",
     "is_weekend", "is_month_start", "is_month_end", "day_of_year",
-    # geography (5) -- added haversine & circuity over v1
+    # geography (5) -- added haversine & circuity
     "lat_diff", "lon_diff", "geo_distance_approx", "haversine", "circuity",
     # interactions (4)
     "distance_x_market", "distance_x_quote", "weight_x_distance", "market_x_quote",
@@ -373,7 +373,7 @@ def generate_december_predictions(models, weights, december_df):
 
 def main():
     print("=" * 60)
-    print("  Freight Rate Prediction - Spotter ML Assessment v4")
+    print("  Freight Rate Prediction - Spotter ML Assessment")
     print("=" * 60)
 
     # 1 Load
