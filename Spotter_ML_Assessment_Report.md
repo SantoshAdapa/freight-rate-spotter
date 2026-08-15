@@ -1,10 +1,21 @@
 # Spotter ML Engineer Assessment Report
 
-## 1. Validation Strategy & Data Split
+## 1. EDA & Model Selection
+
+Before building features, I analyzed the historical data to understand the underlying distributions:
+* **Target Distribution:** Freight rates were heavily right-skewed. Rather than a log-transform (which I found actually degraded validation performance), I relied on robust regression objectives to handle the long tail of high rates.
+* **Equipment Profiles:** Different equipment types showed distinct baseline rate-per-mile (RPM) profiles (e.g., Reefers commanded a consistent premium over Dry Vans). I used this insight to build equipment-specific RPM baselines as a core feature.
+
+**Why LightGBM?**
+I selected LightGBM over alternatives like Random Forests or Neural Networks because it natively handles the sparse, high-cardinality categorical data typical of freight routing. It trains fast enough to allow for daily retraining schedules, and its leaf-wise growth strategy is exceptionally good at capturing complex, non-linear interactions between geography and market indices.
+
+---
+
+## 2. Validation Strategy & Data Split
 
 My main goal was to avoid data leakage. Since freight markets are heavily influenced by seasonality and macro trends, doing a standard random train/test split would artificially inflate the validation metrics (because the model would be peeking at future market signals to predict past rates). 
 
-Instead, I went with a strict time-based holdout:
+Instead, I used a strict time-based holdout:
 * **Train Set (Jan – Aug 2025):** 38,477 records. I used this exclusively to build target encodings and train the model.
 * **Validation Set (Sep – Oct 2025):** 9,523 records. I used this to evaluate how well the model generalizes to future, unseen market conditions.
 
@@ -18,7 +29,7 @@ Given the 6.39% MAPE on strict future data, I'm highly confident these predictio
 
 ---
 
-## 2. Model Pipeline & Features
+## 3. Model Pipeline & Features
 
 To get to that performance, I focused on a few key areas of feature engineering:
 
@@ -30,7 +41,7 @@ To get to that performance, I focused on a few key areas of feature engineering:
 
 ---
 
-## 3. December Prediction Chart
+## 4. December Prediction Chart
 
 Here is the forecast for the fixed Lexington-to-Fort Wayne route for December 2025:
 
@@ -38,3 +49,12 @@ Here is the forecast for the fixed Lexington-to-Fort Wayne route for December 20
 
 **Thoughts on the output:**
 The model establishes a stable baseline rate for the route while reacting dynamically to the temporal features. You can clearly see the expected late-December rate spike as the model accounts for the typical holiday capacity crunch in the freight market.
+
+---
+
+## 5. Path to Production (Next Steps)
+
+If I had more time to prepare this for a live production environment, my next steps would be:
+1. **Deployment:** Containerize the inference pipeline with Docker and expose it via a FastAPI microservice for low-latency, real-time quoting.
+2. **Handling Concept Drift:** Freight markets are highly dynamic. I would implement an automated weekly retraining pipeline with MLflow to track model decay, ensuring the system immediately adapts to sudden macroeconomic shifts.
+3. **Hyperparameter Optimization:** Run a distributed Optuna sweep over the LightGBM hyperparameters to squeeze out the final few percentage points of accuracy before deployment.
