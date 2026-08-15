@@ -45,7 +45,7 @@ To get to that performance, I focused on a few key areas of feature engineering:
 
 Here is the forecast for the fixed Lexington-to-Fort Wayne route for December 2025:
 
-![Candidate December](candidate_december.png)
+![Candidate December](https://raw.githubusercontent.com/SantoshAdapa/freight-rate-spotter/master/candidate_december.png)
 
 **Thoughts on the output:**
 The model establishes a stable baseline rate for the route while reacting dynamically to the temporal features. You can clearly see the expected late-December rate spike as the model accounts for the typical holiday capacity crunch in the freight market.
